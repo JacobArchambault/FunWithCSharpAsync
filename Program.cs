@@ -1,65 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-
+using static System.Console;
+using static System.Threading.Tasks.Task;
+using static System.Threading.Thread;
 namespace FunWithCSharpAsync
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
-            Console.WriteLine(" Fun With Async ===>");
-            //Console.WriteLine(DoWork());
-            DoWork();
+            WriteLine(" Fun With Async ===>");
+            WriteLine(DoWork());
             string message = await DoWorkAsync();
-            Console.WriteLine(message);
+            WriteLine(message);
+            WriteLine("Completed");
             await MethodReturningVoidAsync();
-            Console.WriteLine("Void method complete");
-            await MethodReturningVoidAsync();
+            await MultiAwaits();
+            await MethodWithTryCatch();
+            await ReturnAnInt();
             await MethodWithProblems(7, -5);
             await MethodWithProblemsFixed(7, -5);
-            Console.WriteLine("Completed");
-            Console.ReadLine();
+            ReadLine();
+
+
+
+            //WriteLine("Completed");
+            //ReadLine();
         }
 
         static string DoWork()
         {
-            Thread.Sleep(5_000);
+            Sleep(5_000);
             return "Done with work!";
         }
 
-        static async Task<string> DoWorkAsync()
-        {
-            return await Task.Run(() =>
-            {
-                Thread.Sleep(5_000);
-                return "Done with work!";
-            });
-        }
+        static async Task<string> DoWorkAsync() => await Run(() =>
+                                                             {
+                                                                 Sleep(5_000);
+                                                                 return "Done with work!";
+                                                             });
 
         static async Task MethodReturningVoidAsync()
         {
-            await Task.Run(() =>
+            await Run(() =>
             {
                 /* Do some work here... */
-                Thread.Sleep(4_000);
+                Sleep(4_000);
             });
-            Console.WriteLine("Void method completed");
+            WriteLine("Void method completed");
         }
 
         static async Task MultiAwaits()
         {
-            await Task.Run(() => { Thread.Sleep(2_000); });
-            Console.WriteLine("Done with first task!");
+            await Run(() => { Sleep(2_000); });
+            WriteLine("Done with first task!");
 
-            await Task.Run(() => { Thread.Sleep(2_000); });
-            Console.WriteLine("Done with second task!");
+            await Run(() => { Sleep(2_000); });
+            WriteLine("Done with second task!");
 
-            await Task.Run(() => { Thread.Sleep(2_000); });
-            Console.WriteLine("Done with third task!");
+            await Run(() => { Sleep(2_000); });
+            WriteLine("Done with third task!");
         }
 
         static async Task<string> MethodWithTryCatch()
@@ -69,20 +69,11 @@ namespace FunWithCSharpAsync
                 //Do some work
                 return "Hello";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await LogTheErrors();
                 throw;
             }
-            finally
-            {
-                await DoMagicCleanUp();
-            }
-        }
-
-        private static Task DoMagicCleanUp()
-        {
-            throw new NotImplementedException();
         }
 
         private static Task LogTheErrors()
@@ -92,46 +83,46 @@ namespace FunWithCSharpAsync
 
         static async Task MethodWithProblems(int firstParam, int secondParam)
         {
-            Console.WriteLine("Enter");
-            await Task.Run(() =>
+            WriteLine("Enter");
+            await Run(() =>
             {
                 //Call long running method
-                Thread.Sleep(4_000);
-                Console.WriteLine("First Complete");
+                Sleep(4_000);
+                WriteLine("First Complete");
                 //Call another long running method that fails because
                 //the second parameter is out of range
-                Console.WriteLine("Something bad happened");
+                WriteLine("Something bad happened");
             });
         }
 
         static async Task MethodWithProblemsFixed(int firstParam, int secondParam)
         {
-            Console.WriteLine("Enter");
+            WriteLine("Enter");
             if (secondParam < 0)
             {
-                Console.WriteLine("Bad data");
+                WriteLine("Bad data");
                 return;
             }
 
-            actualImplementation();
+            await actualImplementation();
 
             async Task actualImplementation()
             {
-                await Task.Run(() =>
+                await Run(() =>
                 {
                     //Call long running method
-                    Thread.Sleep(4_000);
-                    Console.WriteLine("First Complete");
+                    Sleep(4_000);
+                    WriteLine("First Complete");
                     //Call another long running method that fails because
                     //the second parameter is out of range
-                    Console.WriteLine("Something bad happened");
+                    WriteLine("Something bad happened");
                 });
             }
         }
 
         static async ValueTask<int> ReturnAnInt()
         {
-            await Task.Delay(1_000);
+            await Delay(1_000);
             return 5;
         }
     }
